@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pared: #ddd4bd;
+  --zocalo: #6f7d63;
+  --zocalo-oscuro: #586353;
+  --piso: #c7b797;
+  --tinta: #2a271f;
+  --yeso: #efe9d8;
+  --salida: #4f7a52;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--pared);
+  color: var(--tinta);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* textura de grano sutil, como una foto vieja de pasillo */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* viñeta, como si la luz de tubo fluorescente sólo llegara al centro */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 41;
+  background: radial-gradient(
+    circle at 50% 20%,
+    transparent 0%,
+    transparent 55%,
+    rgba(42, 39, 31, 0.16) 100%
+  );
+}
+
+::selection {
+  background: var(--zocalo);
+  color: var(--yeso);
+}
+
+/* la luz de tubo del encabezado parpadea una vez al cargar */
+@keyframes parpadeo {
+  0% { opacity: 1; }
+  4% { opacity: 0.4; }
+  6% { opacity: 1; }
+  9% { opacity: 0.3; }
+  11% { opacity: 1; }
+  100% { opacity: 1; }
+}
+.luz-tubo {
+  animation: parpadeo 2.4s ease-out 1;
+}
+
+.prosa-entrada {
+  font-family: var(--font-caslon-text), serif;
+  max-width: 68ch;
+}
+.prosa-entrada p {
+  margin: 1.1em 0;
+  line-height: 1.75;
+}
+.prosa-entrada a {
+  color: var(--salida);
+  text-underline-offset: 3px;
+}
+.prosa-entrada blockquote {
+  border-left: 2px solid var(--zocalo);
+  padding-left: 1rem;
+  color: #4a4636;
+  font-style: italic;
+}
+.prosa-entrada h2, .prosa-entrada h3 {
+  font-family: var(--font-caslon-display), serif;
+  margin-top: 1.6em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luz-tubo { animation: none; }
+  html { scroll-behavior: auto; }
+}
