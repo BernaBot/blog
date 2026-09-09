@@ -1,10 +1,24 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { supabaseServiceRoleKey, supabaseUrl } from "@/lib/env";
 
 // Cliente con la service role key: sólo se usa en rutas de API del
 // servidor, nunca en el cliente. Ignora RLS, así que acá sí se ven
 // y modifican los borradores (publicado = false).
-export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+let cliente: SupabaseClient | undefined;
+
+export function getSupabaseAdmin() {
+  if (!cliente) {
+    cliente = createClient(supabaseUrl(), supabaseServiceRoleKey(), {
+      auth: { persistSession: false },
+    });
+  }
+  return cliente;
+}
+
+export const supabaseAdmin = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const actual = getSupabaseAdmin();
+    const valor = Reflect.get(actual, prop, actual);
+    return typeof valor === "function" ? valor.bind(actual) : valor;
+  },
+});

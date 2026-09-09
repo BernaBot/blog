@@ -2,6 +2,7 @@ import { supabasePublico } from "@/lib/supabase";
 import Header from "@/components/Header";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export default async function Biografia() {
   const { data } = await supabasePublico.from("config").select("*");

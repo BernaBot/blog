@@ -3,6 +3,8 @@ import { supabasePublico } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { haySesionValida } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/config -> devuelve clave/valor (índice, biografía, bajada, título)
 export async function GET() {
   const { data, error } = await supabasePublico.from("config").select("*");

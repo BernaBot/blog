@@ -4,6 +4,7 @@ import EntradaCard from "@/components/EntradaCard";
 import type { Entrada } from "@/lib/types";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 async function obtenerConfig() {
   const { data } = await supabasePublico.from("config").select("*");

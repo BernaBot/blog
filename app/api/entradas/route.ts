@@ -3,6 +3,8 @@ import { supabasePublico } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { haySesionValida } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 function slugify(texto: string) {
   return texto
     .toLowerCase()
