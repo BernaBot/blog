@@ -1,15 +1,26 @@
+"use client";
+
 import type { ReactNode } from "react";
 import BioToggle from "@/components/BioToggle";
+import AutorBarra from "@/components/AutorBarra";
 
 export default function Header({
   titulo,
   bajada,
   biografia,
+  esAutor,
+  onNueva,
+  onEditarSitio,
+  onSalir,
   children,
 }: {
   titulo: string;
   bajada: string;
   biografia?: string;
+  esAutor?: boolean;
+  onNueva?: () => void;
+  onEditarSitio?: () => void;
+  onSalir?: () => void;
   children?: ReactNode;
 }) {
   return (
@@ -19,7 +30,14 @@ export default function Header({
       <p className="dintel-bajada font-masthead italic tracking-[0.04em] text-tinta/70">
         {bajada}
       </p>
-      <BioToggle texto={biografia || ""} />
+      {esAutor && onNueva && onEditarSitio && onSalir ? (
+        <AutorBarra
+          onNueva={onNueva}
+          onEditarSitio={onEditarSitio}
+          onSalir={onSalir}
+        />
+      ) : null}
+      <BioToggle texto={biografia || ""} esAutor={esAutor} />
       {children ? <div className="dintel-sobre">{children}</div> : null}
     </header>
   );

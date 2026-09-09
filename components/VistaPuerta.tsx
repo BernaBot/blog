@@ -7,7 +7,15 @@ import ListaIndice from "@/components/ListaIndice";
 import ArticuloEntrada from "@/components/ArticuloEntrada";
 import { useBusqueda } from "@/components/Busqueda";
 
-export default function VistaPuerta({ entradas }: { entradas: Entrada[] }) {
+export default function VistaPuerta({
+  entradas,
+  esAutor,
+  onEditar,
+}: {
+  entradas: Entrada[];
+  esAutor?: boolean;
+  onEditar?: (entrada: Entrada) => void;
+}) {
   const pathname = usePathname();
   const params = useSearchParams();
   const { q } = useBusqueda();
@@ -36,13 +44,21 @@ export default function VistaPuerta({ entradas }: { entradas: Entrada[] }) {
   return (
     <FadeCambio clave={clave}>
       {entrada ? (
-        <ArticuloEntrada entrada={entrada} />
+        <ArticuloEntrada
+          entrada={entrada}
+          esAutor={esAutor}
+          onEditar={onEditar}
+        />
       ) : slug ? (
         <p className="font-clinico text-sm text-[#fcfbf8]/60">
           no se encontró ese expediente.
         </p>
       ) : (
-        <ListaIndice entradas={entradas} />
+        <ListaIndice
+          entradas={entradas}
+          esAutor={esAutor}
+          onEditar={onEditar}
+        />
       )}
     </FadeCambio>
   );

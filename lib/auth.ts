@@ -1,31 +1,29 @@
-import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import type { User } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export const NOMBRE_COOKIE_SESION = "sesion_apatia";
-export const DURACION_SEGUNDOS = 60 * 60 * 24 * 7; // 7 días
-
-function clave() {
-  const secreto = process.env.SESSION_SECRET || "clave-de-desarrollo-insegura";
-  return new TextEncoder().encode(secreto);
+export async function obtenerUsuario() {
+  const supabase = createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return { supabase, user };
 }
 
-export async function firmarTokenSesion() {
-  return new SignJWT({ rol: "autor" })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(`${DURACION_SEGUNDOS}s`)
-    .sign(clave());
+export async function esAutor(supabase: SupabaseClient, user: User | null) {
+  if (!user) return false;
+  const { data } = await supabase
+    .from("autores")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  return Boolean(data);
 }
 
-// Lee la sesión desde las cookies de la request actual (sirve en Server
-// Components, Route Handlers y middleware indistintamente).
-export async function haySesionValida(tokenDirecto?: string) {
-  try {
-    const token = tokenDirecto ?? cookies().get(NOMBRE_COOKIE_SESION)?.value;
-    if (!token) return false;
-    await jwtVerify(token, clave());
-    return true;
-  } catch {
-    return false;
+export async function exigirAutor() {
+  const { supabase, user } = await obtenerUsuario();
+  if (!user || !(await esAutor(supabase, user))) {
+    return { supabase: null, user: null, ok: false as const };
   }
+  return { supabase, user, ok: true as const };
 }

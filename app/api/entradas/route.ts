@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabasePublico } from "@/lib/supabase";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { haySesionValida } from "@/lib/auth";
+import { createSupabaseServer } from "@/lib/supabase/server";
+import { exigirAutor } from "@/lib/auth";
 import { revalidarContenido } from "@/lib/revalidar";
 
 export const dynamic = "force-dynamic";
@@ -16,19 +15,13 @@ function slugify(texto: string) {
     .slice(0, 80);
 }
 
-// GET /api/entradas            -> listado público (sólo publicadas)
-// GET /api/entradas?todas=1    -> listado completo, requiere sesión (panel)
-// GET /api/entradas?categoria=xyz -> filtra por categoría
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const todas = searchParams.get("todas") === "1";
   const categoria = searchParams.get("categoria");
   const busqueda = searchParams.get("q");
+  const supabase = createSupabaseServer();
 
-  const sesion = todas ? await haySesionValida() : false;
-  const cliente = sesion ? supabaseAdmin : supabasePublico;
-
-  let query = cliente
+  let query = supabase
     .from("entradas")
     .select("*")
     .order("creado_en", { ascending: false });
@@ -49,9 +42,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ entradas: data });
 }
 
-// POST /api/entradas -> crea una entrada nueva (requiere sesión)
 export async function POST(req: NextRequest) {
-  if (!(await haySesionValida())) {
+  const autor = await exigirAutor();
+  if (!autor.ok) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
 
@@ -60,9 +53,8 @@ export async function POST(req: NextRequest) {
   let slug = slugBase;
   let intento = 1;
 
-  // evita choques de slug
   while (true) {
-    const { data } = await supabaseAdmin
+    const { data } = await autor.supabase
       .from("entradas")
       .select("id")
       .eq("slug", slug)
@@ -72,7 +64,7 @@ export async function POST(req: NextRequest) {
     slug = `${slugBase}-${intento}`;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await autor.supabase
     .from("entradas")
     .insert({
       slug,
@@ -89,6 +81,6 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  revalidarContenido(data?.slug, data?.id);
+  revalidarContenido(data?.slug);
   return NextResponse.json({ entrada: data });
 }

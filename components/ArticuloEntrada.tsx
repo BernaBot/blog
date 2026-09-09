@@ -4,9 +4,18 @@ import Link from "next/link";
 import { renderContenido } from "@/lib/markdown";
 import { categoriasVisibles } from "@/lib/entradas";
 import Embed from "@/components/Embed";
+import ControlesAutor from "@/components/ControlesAutor";
 import type { Entrada } from "@/lib/types";
 
-export default function ArticuloEntrada({ entrada }: { entrada: Entrada }) {
+export default function ArticuloEntrada({
+  entrada,
+  esAutor,
+  onEditar,
+}: {
+  entrada: Entrada;
+  esAutor?: boolean;
+  onEditar?: (entrada: Entrada) => void;
+}) {
   return (
     <article>
       <Link
@@ -35,6 +44,10 @@ export default function ArticuloEntrada({ entrada }: { entrada: Entrada }) {
           ))}
         </div>
       )}
+
+      {esAutor && onEditar ? (
+        <ControlesAutor entrada={entrada} onEditar={onEditar} />
+      ) : null}
 
       <div
         className="prosa-entrada mt-8"

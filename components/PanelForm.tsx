@@ -7,8 +7,12 @@ import { categoriasVisibles, conArriba, estaArriba } from "@/lib/entradas";
 
 export default function PanelForm({
   entrada,
+  onCancelar,
+  onGuardado,
 }: {
   entrada?: Entrada;
+  onCancelar: () => void;
+  onGuardado: (entrada: Entrada) => void;
 }) {
   const router = useRouter();
   const [titulo, setTitulo] = useState(entrada?.titulo ?? "");
@@ -74,8 +78,10 @@ export default function PanelForm({
       return;
     }
 
-    router.push("/panel");
+    const data = await res.json().catch(() => ({}));
     router.refresh();
+    if (data.entrada) onGuardado(data.entrada as Entrada);
+    else onCancelar();
   }
 
   return (
@@ -213,7 +219,7 @@ export default function PanelForm({
         </button>
         <button
           type="button"
-          onClick={() => router.push("/panel")}
+          onClick={onCancelar}
           className="px-5 py-2 font-clinico text-sm text-tinta/60 hover:text-tinta"
         >
           cancelar

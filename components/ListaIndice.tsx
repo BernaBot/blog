@@ -7,6 +7,7 @@ import type { Entrada } from "@/lib/types";
 import { categoriasVisibles } from "@/lib/entradas";
 import { useBusqueda } from "@/components/Busqueda";
 import EntradaCard from "@/components/EntradaCard";
+import ControlesAutor from "@/components/ControlesAutor";
 
 function coincide(entrada: Entrada, q: string) {
   const t = q.trim().toLowerCase();
@@ -17,7 +18,15 @@ function coincide(entrada: Entrada, q: string) {
   return campos.includes(t);
 }
 
-export default function ListaIndice({ entradas }: { entradas: Entrada[] }) {
+export default function ListaIndice({
+  entradas,
+  esAutor,
+  onEditar,
+}: {
+  entradas: Entrada[];
+  esAutor?: boolean;
+  onEditar?: (entrada: Entrada) => void;
+}) {
   const { q } = useBusqueda();
   const params = useSearchParams();
   const categoria = params.get("categoria") ?? "";
@@ -86,11 +95,15 @@ export default function ListaIndice({ entradas }: { entradas: Entrada[] }) {
         </p>
       ) : (
         filtradas.map((e) => (
-          <EntradaCard
-            key={e.id}
-            entrada={e}
-            numero={numeros.get(e.id) ?? 0}
-          />
+          <div key={e.id}>
+            <EntradaCard
+              entrada={e}
+              numero={numeros.get(e.id) ?? 0}
+            />
+            {esAutor && onEditar ? (
+              <ControlesAutor entrada={e} onEditar={onEditar} />
+            ) : null}
+          </div>
         ))
       )}
     </>
