@@ -10,6 +10,9 @@ export function getSupabaseAdmin() {
   if (!cliente) {
     cliente = createClient(supabaseUrl(), supabaseServiceRoleKey(), {
       auth: { persistSession: false },
+      global: {
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
     });
   }
   return cliente;

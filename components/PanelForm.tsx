@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Entrada, Medio } from "@/lib/types";
+import { categoriasVisibles, conArriba, estaArriba } from "@/lib/entradas";
 
 export default function PanelForm({
   entrada,
@@ -14,9 +15,10 @@ export default function PanelForm({
   const [extracto, setExtracto] = useState(entrada?.extracto ?? "");
   const [contenido, setContenido] = useState(entrada?.contenido ?? "");
   const [categorias, setCategorias] = useState(
-    entrada?.categorias?.join(", ") ?? ""
+    categoriasVisibles(entrada?.categorias).join(", ")
   );
   const [publicado, setPublicado] = useState(entrada?.publicado ?? true);
+  const [arriba, setArriba] = useState(estaArriba(entrada ?? {}));
   const [medios, setMedios] = useState<Medio[]>(entrada?.medios ?? []);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
@@ -43,10 +45,13 @@ export default function PanelForm({
       titulo,
       extracto,
       contenido,
-      categorias: categorias
-        .split(",")
-        .map((c) => c.trim().toLowerCase())
-        .filter(Boolean),
+      categorias: conArriba(
+        categorias
+          .split(",")
+          .map((c) => c.trim().toLowerCase())
+          .filter(Boolean),
+        arriba
+      ),
       medios: medios.filter((m) => m.url.trim()),
       publicado,
     };
@@ -56,6 +61,7 @@ export default function PanelForm({
 
     const res = await fetch(url, {
       method: metodo,
+      cache: "no-store",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cuerpo),
     });
@@ -186,6 +192,15 @@ export default function PanelForm({
           onChange={(e) => setPublicado(e.target.checked)}
         />
         publicada (si está destildado queda como borrador)
+      </label>
+
+      <label className="flex items-center gap-2 font-clinico text-xs text-tinta/70">
+        <input
+          type="checkbox"
+          checked={arriba}
+          onChange={(e) => setArriba(e.target.checked)}
+        />
+        fijar arriba (sale primero, sin importar la fecha)
       </label>
 
       <div className="flex gap-3">

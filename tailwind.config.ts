@@ -11,10 +11,12 @@ const config: Config = {
         piso: "#c7b797",
         tinta: "#2a271f",
         yeso: "#efe9d8",
+        hoja: "#fbf6e8",
         salida: "#4f7a52",
         expediente: "#8a3b2f"
       },
       fontFamily: {
+        masthead: ["var(--font-masthead)", "serif"],
         display: ["var(--font-caslon-display)", "serif"],
         texto: ["var(--font-caslon-text)", "serif"],
         clinico: ["var(--font-plex-mono)", "monospace"]

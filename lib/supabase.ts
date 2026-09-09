@@ -9,7 +9,11 @@ let cliente: SupabaseClient | undefined;
 
 export function getSupabasePublico() {
   if (!cliente) {
-    cliente = createClient(supabaseUrl(), supabaseAnonKey());
+    cliente = createClient(supabaseUrl(), supabaseAnonKey(), {
+      global: {
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
+    });
   }
   return cliente;
 }

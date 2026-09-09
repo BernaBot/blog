@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabasePublico } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { haySesionValida } from "@/lib/auth";
+import { revalidarContenido } from "@/lib/revalidar";
 
 export const dynamic = "force-dynamic";
 
@@ -88,5 +89,6 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidarContenido(data?.slug, data?.id);
   return NextResponse.json({ entrada: data });
 }

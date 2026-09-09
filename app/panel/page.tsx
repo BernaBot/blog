@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import type { Entrada } from "@/lib/types";
+import { categoriasVisibles, estaArriba, ordenarEntradas } from "@/lib/entradas";
 import CerrarSesionBoton from "./CerrarSesionBoton";
 import EditorConfig from "./EditorConfig";
+import BotonesEntrada from "./BotonesEntrada";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 export default async function Panel() {
   const { data } = await supabaseAdmin
@@ -13,7 +16,7 @@ export default async function Panel() {
     .select("*")
     .order("creado_en", { ascending: false });
 
-  const entradas = (data ?? []) as Entrada[];
+  const entradas = ordenarEntradas((data ?? []) as Entrada[]);
 
   return (
     <main className="min-h-screen bg-yeso">
@@ -59,10 +62,12 @@ export default async function Panel() {
                   )}
                 </p>
                 <p className="font-clinico text-[11px] text-tinta/40">
-                  /{e.slug} · {e.categorias.join(", ") || "sin categorías"}
+                  /{e.slug} · {categoriasVisibles(e.categorias).join(", ") || "sin categorías"}
+                  {estaArriba(e) ? " · arriba" : ""}
                 </p>
               </div>
               <div className="flex gap-3 font-clinico text-xs">
+                <BotonesEntrada entrada={e} />
                 <Link href={`/panel/editar/${e.id}`} className="text-salida hover:underline">
                   editar
                 </Link>

@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import { Libre_Caslon_Display, Libre_Caslon_Text, IBM_Plex_Mono } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Libre_Caslon_Display,
+  Libre_Caslon_Text,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import "./globals.css";
 import SecretListener from "@/components/SecretListener";
 
+const masthead = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-masthead",
+});
 const caslonDisplay = Libre_Caslon_Display({
   subsets: ["latin"],
   weight: "400",
@@ -33,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${caslonDisplay.variable} ${caslonText.variable} ${plexMono.variable} font-texto`}
+        className={`${masthead.variable} ${caslonDisplay.variable} ${caslonText.variable} ${plexMono.variable} font-texto`}
       >
         <SecretListener />
         {children}

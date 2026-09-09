@@ -4,6 +4,10 @@ import PanelForm from "@/components/PanelForm";
 import type { Entrada } from "@/lib/types";
 import BotonEliminar from "./BotonEliminar";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export default async function EditarEntrada({
   params,
 }: {
@@ -28,7 +32,7 @@ export default async function EditarEntrada({
           </div>
           <BotonEliminar id={entrada.id} />
         </div>
-        <PanelForm entrada={entrada} />
+        <PanelForm key={`${entrada.id}-${entrada.actualizado_en}`} entrada={entrada} />
       </div>
     </main>
   );
